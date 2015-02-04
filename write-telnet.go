@@ -9,9 +9,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"strings"
 	"flag"
-	"unicode/utf8"
 )
 
 var (
@@ -184,25 +182,21 @@ func readInput(c net.Conn) {
 func savePost(post []byte) (string, error) {
 	filename := generateFileName()
 	f, err := os.Create(outDir + "/" + filename)
+	if err != nil {
+		return "", err
+	}
 	
 	defer f.Close()
 	
-	if err != nil {
-		fmt.Println(err)
+	out := post[:0]
+	for _, b := range post {
+		if b < 32 && b != 10 && b != 13 {
+			continue
+		}
+		out = append(out, b)
 	}
+	_, err = io.Copy(f, bytes.NewReader(out))
 
-	var decodedPost bytes.Buffer
-
-	// Decode UTF-8
-	for len(post) > 0 {
-		r, size := utf8.DecodeRune(post)
-		decodedPost.WriteRune(r)
-
-		post = post[size:]
-	}
-
-	_, err = io.WriteString(f, stripCtlAndExtFromUTF8(string(decodedPost.Bytes())))
-	
 	return filename, err
 }
 
@@ -215,13 +209,4 @@ func generateFileName() string {
 		 bytes[k] = dictionary[v%byte(len(dictionary))]
 	}
 	return string(bytes)
-}
-
-func stripCtlAndExtFromUTF8(str string) string {
-	return strings.Map(func(r rune) rune {
-		if r == 10 || r == 13 || (r >= 32 && r < 65533) {
-			return r
-		}
-		return -1
-	}, str)
 }
