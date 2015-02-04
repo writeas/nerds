@@ -10,10 +10,15 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"flag"
 )
 
 var (
 	banner []byte
+	outDir string
+	staticDir string
+	debugging bool
+	rsyncHost string
 )
 
 const (
@@ -24,27 +29,46 @@ const (
 	colBRed = "\033[1;31m"
 	colBold = "\033[1;37m"
 	noCol = "\033[0m"
-	
+
 	nameLen = 12
-	outDir = "/var/write/"
-	bannerDir = "./"
+
 	hr = "————————————————————————————————————————————————————————————————————————————————"
 )
 
 func main() {
-	ln, err := net.Listen("tcp", ":9727")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Listening on localhost:9727")
+	// Get any arguments
+	outDirPtr := flag.String("o", "/var/write", "Directory where text files will be stored.")
+	staticDirPtr := flag.String("s", ".", "Directory where required static files exist.")
+	rsyncHostPtr := flag.String("h", "", "Hostname of the server to rsync saved files to.")
+	portPtr := flag.Int("p", 2323, "Port to listen on.")
+	debugPtr := flag.Bool("debug", false, "Enables garrulous debug logging.")
+	flag.Parse()
+
+	outDir = *outDirPtr
+	staticDir = *staticDirPtr
+	rsyncHost = *rsyncHostPtr
+	debugging = *debugPtr
+
+	fmt.Print("\nCONFIG:\n")
+	fmt.Printf("Output directory  : %s\n", outDir)
+	fmt.Printf("Static directory  : %s\n", staticDir)
+	fmt.Printf("rsync host        : %s\n", rsyncHost)
+	fmt.Printf("Debugging enabled : %t\n\n", debugging)
 	
 	fmt.Print("Initializing...")
-	banner, err = ioutil.ReadFile(bannerDir + "/banner.txt")
+	var err error
+	banner, err = ioutil.ReadFile(staticDir + "/banner.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println("DONE")
 	
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", *portPtr))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Listening on localhost:%d\n", *portPtr)
+
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
@@ -120,6 +144,11 @@ func readInput(c net.Conn) {
 		n, err := c.Read(b)
 		post.Write(b[0:n])
 		
+		if debugging {
+			fmt.Print(b[0:n])
+			fmt.Printf("\n%d: %s\n", n, b[0:n])
+		}
+
 		if checkExit(b, n) {
 			file, err := savePost(post.Bytes())
 			if err != nil {
@@ -128,8 +157,13 @@ func readInput(c net.Conn) {
 				break
 			}
 			output(c, fmt.Sprintf("\n%s\nPosted to %shttp://nerds.write.as/%s%s\nPosting to secure site...", hr, colBlue, file, noCol))
-			exec.Command("rsync", "-ptgou", outDir + file, "www:").Run()
-			output(c, fmt.Sprintf("\nPosted! View at %shttps://write.as/%s%s\nSee you later.\n\n", colBlue, file, noCol))
+
+			if rsyncHost != "" {
+				exec.Command("rsync", "-ptgou", outDir + "/" + file, rsyncHost + ":").Run()
+				output(c, fmt.Sprintf("\nPosted! View at %shttps://write.as/%s%s", colBlue, file, noCol))
+			}
+
+			output(c, "\nSee you later.\n\n")
 			break
 		}
 		
@@ -141,7 +175,7 @@ func readInput(c net.Conn) {
 
 func savePost(post []byte) (string, error) {
 	filename := generateFileName()
-	f, err := os.Create(outDir + filename)
+	f, err := os.Create(outDir + "/" + filename)
 	
 	defer f.Close()
 	
