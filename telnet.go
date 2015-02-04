@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"strings"
 	"flag"
+	"unicode/utf8"
 )
 
 var (
@@ -182,7 +183,18 @@ func savePost(post []byte) (string, error) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, err = io.WriteString(f, stripCtlAndExtFromUTF8(string(post)))
+
+	var decodedPost bytes.Buffer
+
+	// Decode UTF-8
+	for len(post) > 0 {
+		r, size := utf8.DecodeRune(post)
+		decodedPost.WriteRune(r)
+
+		post = post[size:]
+	}
+
+	_, err = io.WriteString(f, stripCtlAndExtFromUTF8(string(decodedPost.Bytes())))
 	
 	return filename, err
 }
@@ -200,7 +212,7 @@ func generateFileName() string {
 
 func stripCtlAndExtFromUTF8(str string) string {
 	return strings.Map(func(r rune) rune {
-		if r == 10 || r == 13 || (r >= 32 && r < 255) {
+		if r == 10 || r == 13 || r >= 32 {
 			return r
 		}
 		return -1
