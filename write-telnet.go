@@ -163,9 +163,10 @@ func readInput(c net.Conn) {
 				output(c, "Something went terribly wrong, sorry. Try again later?\n\n")
 				break
 			}
-			output(c, fmt.Sprintf("\n%s\nPosted to %shttp://nerds.write.as/%s%s\nPosting to secure site...", hr, colBlue, file, noCol))
+			output(c, fmt.Sprintf("\n%s\nPosted to %shttp://nerds.write.as/%s%s", hr, colBlue, file, noCol))
 
 			if rsyncHost != "" {
+				output(c, "\nPosting to secure site...")
 				exec.Command("rsync", "-ptgou", outDir + "/" + file, rsyncHost + ":").Run()
 				output(c, fmt.Sprintf("\nPosted! View at %shttps://write.as/%s%s", colBlue, file, noCol))
 			}
