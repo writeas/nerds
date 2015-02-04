@@ -1,5 +1,7 @@
 Write.as
 ========
+[![Build Status](https://travis-ci.org/writeas/writeas-telnet.svg)](https://travis-ci.org/writeas/writeas-telnet)
+
 This is a simple telnet-based interface for publishing text. Users connect and paste / type what they want to publish. Upon indicating that they're finished, a link is generated to access their new post on the web.
 
 ## Try it
