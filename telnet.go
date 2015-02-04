@@ -117,6 +117,12 @@ func waitForEnter(c net.Conn) {
 	output(c, fmt.Sprintf("%sPress Enter to continue...%s\n", colBRed, noCol))
 	for {
 		n, err := c.Read(b)
+
+		if debugging {
+			fmt.Print(b[0:n])
+			fmt.Printf("\n%d: %s\n", n, b[0:n])
+		}
+
 		if bytes.IndexRune(b[0:n], '\n') > -1 {
 			break
 		}
