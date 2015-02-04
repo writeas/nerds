@@ -29,15 +29,13 @@ const (
 	colBold = "\033[1;37m"
 	noCol = "\033[0m"
 
-	nameLen = 12
-
 	hr = "————————————————————————————————————————————————————————————————————————————————"
 )
 
 func main() {
 	// Get any arguments
 	outDirPtr := flag.String("o", "/var/write", "Directory where text files will be stored.")
-	staticDirPtr := flag.String("s", ".", "Directory where required static files exist.")
+	staticDirPtr := flag.String("s", "./static", "Directory where required static files exist.")
 	rsyncHostPtr := flag.String("h", "", "Hostname of the server to rsync saved files to.")
 	portPtr := flag.Int("p", 2323, "Port to listen on.")
 	debugPtr := flag.Bool("debug", false, "Enables garrulous debug logging.")
