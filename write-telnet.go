@@ -219,7 +219,7 @@ func generateFileName() string {
 
 func stripCtlAndExtFromUTF8(str string) string {
 	return strings.Map(func(r rune) rune {
-		if r == 10 || r == 13 || r >= 32 {
+		if r == 10 || r == 13 || (r >= 32 && r < 65533) {
 			return r
 		}
 		return -1
