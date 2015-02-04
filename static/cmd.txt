@@ -1,0 +1,24 @@
+Welcome to cmd.write.as!
+
+████████████████████████████████████████████████████
+█                                                  █
+█  <command> | curl -F 'w=<-' http://cmd.write.as  █
+█                                                  █
+████████████████████████████████████████████████████
+
+Simple text pasting / publishing. Run then share the link you get. 
+
+No funny stuff — all posts show up on write.as once the command finishes. No 
+sign up, no publicized URLs, no analytics. Publish what you like.
+
+This is the pre-pre-alpha of write.as, showcasing some of what you'll see later.
+We have many plans, all based in text/plain. Keep up to date with us @writeas__
+on Twitter or get notified when we launch at https://write.as.
+
+
+You can also use telnet: nerds.write.as
+
+
+BUGS/ISSUES/YOU HACKED THE GIBSON
+—————————————————————————————————
+Report bugs and flaws to hello@write.as.
