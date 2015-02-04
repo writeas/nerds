@@ -12,7 +12,7 @@ telnet nerds.write.as
 ## Run it yourself
 ```
 Usage:
-  telnet [options]
+  write-telnet [options]
 
 Options:
   --debug
@@ -30,7 +30,7 @@ Options:
 The default configuration (without any flags) is essentially:
 
 ```
-telnet -o /var/write -s . -p 2323
+write-telnet -o /var/write -s . -p 2323
 ```
 
 ## How it works
