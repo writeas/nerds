@@ -11,9 +11,9 @@ const (
 	nameLen = 12
 )
 
-func SavePost(outDir string, post []byte) (string, error) {
+func SavePost(outDirectory string, post []byte) (string, error) {
 	filename := generateFileName()
-	f, err := os.Create(outDir + "/" + filename)
+	f, err := os.Create(outDirectory + "/" + filename)
 	if err != nil {
 		return "", err
 	}
