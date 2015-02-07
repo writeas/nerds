@@ -4,11 +4,10 @@ import (
 	"os"
 	"io"
 	"bytes"
-	"crypto/rand"
 )
 
 const (
-	nameLen = 12
+	FriendlyIdLen = 12
 )
 
 func SavePost(outDir string, post []byte) (string, error) {
@@ -33,12 +32,5 @@ func SavePost(outDir string, post []byte) (string, error) {
 }
 
 func generateFileName() string {
-	c := nameLen
-	var dictionary string = "0123456789abcdefghijklmnopqrstuvwxyz"
-	var bytes = make([]byte, c)
-	rand.Read(bytes)
-	for k, v := range bytes {
-		 bytes[k] = dictionary[v%byte(len(dictionary))]
-	}
-	return string(bytes)
+	return GenerateFriendlyRandomString(FriendlyIdLen)
 }
