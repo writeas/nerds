@@ -5,18 +5,19 @@ import (
 	"net"
 	"bytes"
 	"io/ioutil"
-	"os/exec"
+	"os"
 	"flag"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/writeas/writeas-telnet/store"
 )
 
 var (
 	banner []byte
-	outDir string
 	staticDir string
 	debugging bool
-	rsyncHost string
+	db *sql.DB
 )
 
 const (
@@ -33,22 +34,16 @@ const (
 
 func main() {
 	// Get any arguments
-	outDirPtr := flag.String("o", "/var/write", "Directory where text files will be stored.")
 	staticDirPtr := flag.String("s", "./static", "Directory where required static files exist.")
-	rsyncHostPtr := flag.String("h", "", "Hostname of the server to rsync saved files to.")
 	portPtr := flag.Int("p", 2323, "Port to listen on.")
 	debugPtr := flag.Bool("debug", false, "Enables garrulous debug logging.")
 	flag.Parse()
 
-	outDir = *outDirPtr
 	staticDir = *staticDirPtr
-	rsyncHost = *rsyncHostPtr
 	debugging = *debugPtr
 
 	fmt.Print("\nCONFIG:\n")
-	fmt.Printf("Output directory  : %s\n", outDir)
 	fmt.Printf("Static directory  : %s\n", staticDir)
-	fmt.Printf("rsync host        : %s\n", rsyncHost)
 	fmt.Printf("Debugging enabled : %t\n\n", debugging)
 	
 	fmt.Print("Initializing...")
@@ -58,6 +53,25 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Println("DONE")
+
+	// Connect to database
+	dbUser := os.Getenv("WA_USER")
+	dbPassword := os.Getenv("WA_PASSWORD")
+	dbHost := os.Getenv("WA_HOST")
+
+	if dbUser == "" || dbPassword == "" {
+		fmt.Println("Database user or password not set.")
+		return
+	}
+
+	fmt.Print("Connecting to database...")
+	db, err = sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/writeas?charset=utf8mb4", dbUser, dbPassword, dbHost))
+	if err != nil {
+		fmt.Printf("\n%s\n", err)
+		return
+	}
+	defer db.Close()
+	fmt.Println("CONNECTED")
 	
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", *portPtr))
 	if err != nil {
@@ -152,20 +166,16 @@ func readInput(c net.Conn) {
 		}
 
 		if checkExit(b, n) {
-			file, err := store.SavePost(outDir, post.Bytes())
+			friendlyId := store.GenerateFriendlyRandomString(store.FriendlyIdLen)
+			editToken := store.Generate62RandomString(32)
+
+			_, err := db.Exec("INSERT INTO posts (id, content, modify_token) VALUES (?, ?, ?)", friendlyId, post.Bytes(), editToken)
 			if err != nil {
 				fmt.Printf("There was an error saving: %s\n", err)
 				output(c, "Something went terribly wrong, sorry. Try again later?\n\n")
 				break
 			}
-			output(c, fmt.Sprintf("\n%s\nPosted to %shttp://nerds.write.as/%s%s", hr, colBlue, file, noCol))
-
-			if rsyncHost != "" {
-				output(c, "\nPosting to secure site...")
-				exec.Command("rsync", "-ptgou", outDir + "/" + file, rsyncHost + ":").Run()
-				output(c, fmt.Sprintf("\nPosted! View at %shttps://write.as/%s%s", colBlue, file, noCol))
-			}
-
+			output(c, fmt.Sprintf("\n%s\nPosted! View at %shttps://write.as/%s%s", hr, colBlue, friendlyId, noCol))
 			output(c, "\nSee you later.\n\n")
 			break
 		}
