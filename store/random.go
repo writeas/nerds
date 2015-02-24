@@ -16,7 +16,7 @@ func GenerateRandomString(dictionary string, l int) string {
 	var bytes = make([]byte, l)
 	rand.Read(bytes)
 	for k, v := range bytes {
-		 bytes[k] = dictionary[v%byte(len(dictionary))]
+		bytes[k] = dictionary[v%byte(len(dictionary))]
 	}
 	return string(bytes)
 }

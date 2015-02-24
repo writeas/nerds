@@ -1,9 +1,9 @@
 package store
 
 import (
-	"os"
-	"io"
 	"bytes"
+	"io"
+	"os"
 )
 
 const (
@@ -16,9 +16,9 @@ func SavePost(outDir string, post []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	defer f.Close()
-	
+
 	out := post[:0]
 	for _, b := range post {
 		if b < 32 && b != 10 && b != 13 {
