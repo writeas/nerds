@@ -1,6 +1,6 @@
 Write.as
 ========
-[![Build Status](https://travis-ci.org/writeas/writeas-telnet.svg)](https://travis-ci.org/writeas/writeas-telnet)
+[![Build Status](https://travis-ci.org/writeas/nerds.svg)](https://travis-ci.org/writeas/nerds)
 
 This is a simple telnet-based interface for publishing text. Users connect and paste / type what they want to publish. Upon indicating that they're finished, a link is generated to access their new post on the web.
 
@@ -12,7 +12,7 @@ telnet nerds.write.as
 ## Run it yourself
 ```
 Usage:
-  write-telnet [options]
+  nerds [options]
 
 Options:
   --debug
@@ -30,7 +30,7 @@ Options:
 The default configuration (without any flags) is essentially:
 
 ```
-write-telnet -o /var/write -s . -p 2323
+nerds -o /var/write -s . -p 2323
 ```
 
 ## How it works
