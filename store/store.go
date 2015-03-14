@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	FriendlyIdLen = 12
+	FriendlyIdLen = 13
 )
 
 func SavePost(outDir string, post []byte) (string, error) {
