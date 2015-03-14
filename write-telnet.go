@@ -169,7 +169,7 @@ func readInput(c net.Conn) {
 			friendlyId := store.GenerateFriendlyRandomString(store.FriendlyIdLen)
 			editToken := store.Generate62RandomString(32)
 
-			_, err := db.Exec("INSERT INTO posts (id, content, modify_token) VALUES (?, ?, ?)", friendlyId, post.Bytes(), editToken)
+			_, err := db.Exec("INSERT INTO posts (id, content, modify_token, text_appearance) VALUES (?, ?, ?, 'mono')", friendlyId, post.Bytes(), editToken)
 			if err != nil {
 				fmt.Printf("There was an error saving: %s\n", err)
 				output(c, "Something went terribly wrong, sorry. Try again later?\n\n")
