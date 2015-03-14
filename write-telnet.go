@@ -10,7 +10,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/writeas/writeas-telnet/store"
+	"github.com/writeas/nerds/store"
 )
 
 var (
