@@ -1,33 +1,33 @@
 package main
 
 import (
-	"fmt"
-	"net"
 	"bytes"
-	"io/ioutil"
-	"os"
-	"flag"
 	"database/sql"
+	"flag"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"io/ioutil"
+	"net"
+	"os"
 
 	"github.com/writeas/writeas-telnet/store"
 )
 
 var (
-	banner []byte
+	banner    []byte
 	staticDir string
 	debugging bool
-	db *sql.DB
+	db        *sql.DB
 )
 
 const (
-	colBlue = "\033[0;34m"
-	colGreen = "\033[0;32m"
+	colBlue   = "\033[0;34m"
+	colGreen  = "\033[0;32m"
 	colBGreen = "\033[1;32m"
-	colCyan = "\033[0;36m"
-	colBRed = "\033[1;31m"
-	colBold = "\033[1;37m"
-	noCol = "\033[0m"
+	colCyan   = "\033[0;36m"
+	colBRed   = "\033[1;31m"
+	colBold   = "\033[1;37m"
+	noCol     = "\033[0m"
 
 	hr = "————————————————————————————————————————————————————————————————————————————————"
 )
@@ -45,7 +45,7 @@ func main() {
 	fmt.Print("\nCONFIG:\n")
 	fmt.Printf("Static directory  : %s\n", staticDir)
 	fmt.Printf("Debugging enabled : %t\n\n", debugging)
-	
+
 	fmt.Print("Initializing...")
 	var err error
 	banner, err = ioutil.ReadFile(staticDir + "/banner.txt")
@@ -72,7 +72,7 @@ func main() {
 	}
 	defer db.Close()
 	fmt.Println("CONNECTED")
-	
+
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", *portPtr))
 	if err != nil {
 		panic(err)
@@ -85,7 +85,7 @@ func main() {
 			fmt.Println(err)
 			continue
 		}
-		
+
 		go handleConnection(conn)
 	}
 }
@@ -112,17 +112,17 @@ func handleConnection(c net.Conn) {
 	outputBytes(c, banner)
 	output(c, fmt.Sprintf("\n%sWelcome to write.as!%s\n", colBGreen, noCol))
 	output(c, fmt.Sprintf("If this is freaking you out, you can get notified of the %sbrowser-based%s launch\ninstead at https://write.as.\n\n", colBold, noCol))
-	
+
 	waitForEnter(c)
-	
+
 	c.Close()
-	
+
 	fmt.Printf("Connection from %v closed.\n", c.RemoteAddr())
 }
 
 func waitForEnter(c net.Conn) {
 	b := make([]byte, 4)
-	
+
 	output(c, fmt.Sprintf("%sPress Enter to continue...%s\n", colBRed, noCol))
 	for {
 		n, err := c.Read(b)
@@ -140,7 +140,7 @@ func waitForEnter(c net.Conn) {
 			break
 		}
 	}
-	
+
 	output(c, fmt.Sprintf("Enter anything you like.\nPress %sCtrl-D%s to publish and quit.\n%s\n", colBold, noCol, hr))
 	readInput(c)
 }
@@ -151,15 +151,15 @@ func checkExit(b []byte, n int) bool {
 
 func readInput(c net.Conn) {
 	defer c.Close()
-	
+
 	b := make([]byte, 4096)
-	
+
 	var post bytes.Buffer
-	
+
 	for {
 		n, err := c.Read(b)
 		post.Write(b[0:n])
-		
+
 		if debugging {
 			fmt.Print(b[0:n])
 			fmt.Printf("\n%d: %s\n", n, b[0:n])
@@ -179,7 +179,7 @@ func readInput(c net.Conn) {
 			output(c, "\nSee you later.\n\n")
 			break
 		}
-		
+
 		if err != nil || n == 0 {
 			break
 		}
