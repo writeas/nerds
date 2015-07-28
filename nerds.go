@@ -124,7 +124,7 @@ func outputBytes(c net.Conn, m []byte) bool {
 func handleConnection(c net.Conn) {
 	outputBytes(c, banner)
 	output(c, fmt.Sprintf("\n%sWelcome to write.as!%s\n", colBGreen, noCol))
-	output(c, fmt.Sprintf("If this is freaking you out, you can get notified of the %sbrowser-based%s launch\ninstead at https://write.as.\n\n", colBold, noCol))
+	output(c, fmt.Sprintf("Our telnet server is open source! https://github.com/writeas/nerds\nOptionally post with %scURL%s: http://cmd.write.as\nOr use our cross-platform %scommand-line client%s: https://write.as/cli.html\nWe won't judge if you crawl back to the GUI: https://write.as/apps\n\n", colBold, noCol, colBold, noCol))
 
 	waitForEnter(c)
 
