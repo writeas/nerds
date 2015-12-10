@@ -1,6 +1,6 @@
 Write.as
 ========
-[![Build Status](https://travis-ci.org/writeas/nerds.svg)](https://travis-ci.org/writeas/nerds)
+[![Build Status](https://travis-ci.org/writeas/nerds.svg)](https://travis-ci.org/writeas/nerds) [![Public Slack discussion](http://slack.write.as/badge.svg)](http://slack.write.as/)
 
 This is a simple telnet-based interface for publishing text. Users connect and paste / type what they want to publish. Upon indicating that they're finished, a link is generated to access their new post on the web.
 
