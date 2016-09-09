@@ -7,9 +7,12 @@ import (
 )
 
 const (
+	// FriendlyIdLen is the length of any saved posts's filename.
 	FriendlyIdLen = 13
 )
 
+// SavePost writes the given bytes to a file with a randomly generated name in
+// the given directory.
 func SavePost(outDir string, post []byte) (string, error) {
 	filename := generateFileName()
 	f, err := os.Create(outDir + "/" + filename)
