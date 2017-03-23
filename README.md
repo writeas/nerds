@@ -4,7 +4,11 @@ Write.as
 
 This is a simple telnet-based interface for publishing text. Users connect and paste / type what they want to publish. Upon indicating that they're finished, a link is generated to access their new post on the web.
 
+![Write.as telnet server](https://github.com/writeas/nerds/raw/master/nerds.png)
+
 ## Try it
+**Or not :(**. We had to [shut it down](https://twitter.com/writeas__/status/790356847526027264) because it was getting DDoSed too much. But you can still [run it yourself](#run-it-yourself).
+
 ```
 telnet nerds.write.as
 ```
